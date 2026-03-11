@@ -1,0 +1,14 @@
+{
+  "name": "docker-compose-lamp",
+  "version": "1.0.0",
+  "description": "LAMP AI Example",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dacgray/docker-compose-lamp.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bash": "docker compose exec webserver bash",
+    "gemini": "docker compose exec webserver gemini --yolo"
+  }
+}

@@ -10,3 +10,4 @@
 /buildtest
 
 dev-initdb-scrambled.sql
+.php.env

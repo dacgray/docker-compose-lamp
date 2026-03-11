@@ -13,6 +13,13 @@ RUN apt-get -y update --fix-missing && \
 
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
+# Install Node.js (needed for npm and gemini-cli)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs
+
+# Install gemini-cli
+RUN npm install -g @google/gemini-cli
+
 # Install useful tools and install important libaries
 RUN apt-get -y update && \
     apt-get -y --no-install-recommends install nano wget \

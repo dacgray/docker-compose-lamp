@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+
   webserver:
     build:
       context: ./bin/${PHPVERSION}
@@ -13,6 +14,7 @@ services:
       - database
     volumes:
       - ${DOCUMENT_ROOT-./www}:/var/www/html:rw
+      - ./:/var/www/html/bin:ro
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/php.ini
       - ${SSL_DIR-./config/ssl}:/etc/apache2/ssl/
       - ${VHOSTS_DIR-./config/vhosts}:/etc/apache2/sites-enabled
@@ -67,8 +69,49 @@ services:
     volumes:
       - /sessions
       - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
+
   redis:
     container_name: "${COMPOSE_PROJECT_NAME}-redis"
     image: redis:latest
     ports:
       - "127.0.0.1:${HOST_MACHINE_REDIS_PORT}:6379"
+
+
+  dev-database:
+    image: hospital-mysql-dev:latest
+    container_name: "${COMPOSE_PROJECT_NAME}-dev-database"
+    restart: "always"
+    ports:
+      - "127.0.0.1:3307:3306"
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      UPLOAD_LIMIT: ${UPLOAD_LIMIT}
+      MEMORY_LIMIT: ${MEMORY_LIMIT}
+
+  dev-phpmyadmin:
+    image: phpmyadmin
+    container_name: "${COMPOSE_PROJECT_NAME}-dev-phpmyadmin"
+    links:
+      - dev-database
+    environment:
+      PMA_HOST: dev-database
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      UPLOAD_LIMIT: ${UPLOAD_LIMIT}
+      MEMORY_LIMIT: ${MEMORY_LIMIT}
+    ports:
+      - "8081:80"
+#      - "${HOST_MACHINE_DEV_PMA_SECURE_PORT}:443"
+    volumes:
+      - /sessions
+      - ${PHP_INI-./config/php/php.ini}:/usr/local/etc/php/conf.d/php-phpmyadmin.ini

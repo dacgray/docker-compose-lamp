@@ -1,3 +1,5 @@
+.idea
+.vscode
 /.env
 /.vscode
 /config/*
@@ -6,3 +8,5 @@
 /www/**
 .DS_Store
 /buildtest
+
+dev-initdb-scrambled.sql
